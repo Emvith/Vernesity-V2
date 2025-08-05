@@ -1,11 +1,23 @@
 -- // Vernesity V2 // --
 -- // Made by Emmy (Discord: emvith) // --
 
+--[[
 
+Finally updated this after like 2.7 years
+
+Last updated: 5th August 2025
+
+Changes:
+- Made CommandBars resizable
+- Fixed a small bug with minimizing
+- Added "Reset" buttons to ColorPickers
+
+]]
 
 local Library = {}
 
 local MainOriginalSize = UDim2.new(0, 475, 0, 275)
+local CommandBarOriginalSize = UDim2.new(0, 381, 0, 227)
 local LP = game:GetService('Players').LocalPlayer
 local CoreGui = game.CoreGui
 local PlayerGui = LP:WaitForChild('PlayerGui')
@@ -13,6 +25,7 @@ local UIParent = nil
 local asset = 'rbxassetid://'
 
 local resizable = true
+local resizable2 = true
 local UIS = game:GetService('UserInputService')
 
 Library.Icons = {
@@ -81,7 +94,7 @@ local function loadFunction()
 			task.wait()
 		until
 		Load
-		wait(1)
+		task.wait(1)
 	end
 end
 
@@ -235,6 +248,7 @@ function Library:AddTheme(themeName, newTheme)
 	if type(newTheme) == 'table' and newTheme.TextColor and newTheme.WindowColor and newTheme.TabColor and newTheme.ElementColor and newTheme.SecondaryElementColor then
 		Library.Themes[themeName] = newTheme
 	end
+	return Library.Themes[themeName]
 end
 
 local VernesityV2UI = Library:New('ScreenGui', {
@@ -409,7 +423,7 @@ function Library:EnableKeySystem(title, subtitle, note, keys)
 	Library:Tween(KeySystemUIMain, speed, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 		Size = UDim2.new(0, 381, 0, 158)
 	})
-	wait(speed/2)
+	task.wait(speed/2)
 	Library:Tween(KeySystemUIMain.NoteLabel, speed, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 		TextTransparency = 0.1
 	})
@@ -455,13 +469,13 @@ function Library:EnableKeySystem(title, subtitle, note, keys)
 				})
 			end)
 		end
-		wait(speed/2)
+		task.wait(speed/2)
 		Library:Tween(KeySystemUIMain, 1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 			Position = UDim2.new(0.5, 0, 0.5, 0),
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1
 		})
-		wait(0.5)
+		task.wait(0.5)
 		local tween = Library:Tween(KeySystemUIMain, 2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 			Size = UDim2.new(2, 0, 2, 0)
 		})
@@ -480,7 +494,7 @@ function Library:EnableKeySystem(title, subtitle, note, keys)
 		Library:Tween(KeySystemUIMain.TextBox.UIStroke, .5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 			Transparency = 1
 		})
-		wait(.2)
+		task.wait(.2)
 		if table.find(keys, KeySystemUIMain.TextBox.Text) then
 			Load = true
 			close()
@@ -600,6 +614,7 @@ function Library:Window(title, subtitle, Theme)
 		for _, func in onThemeChangedFunctions do
 			func()
 		end
+		return newTheme
 	end
 
 	function Window:SetColor(...)
@@ -691,7 +706,7 @@ function Library:Window(title, subtitle, Theme)
 			Circle:TweenSizeAndPosition(UDim2.new(0, size, 0, size), UDim2.new(0.5, (-size / 2), 0.5, (-size / 2)), 'Out', 'Quad', len, true, nil)
 			for i = 1, 40 do
 				Circle.ImageTransparency = Circle.ImageTransparency + 0.025
-				wait(len / 13)
+				task.wait(len / 13)
 			end
 			Circle:Destroy()
 		end)
@@ -1023,8 +1038,6 @@ function Library:Window(title, subtitle, Theme)
 				})
 			end
 		end
-		wait(0.75)
-		resizable = true
 	end
 
 	function Window:Maximize()
@@ -1043,7 +1056,7 @@ function Library:Window(title, subtitle, Theme)
 				})
 			end
 		end
-		wait(0.75)
+		task.wait(0.75)
 		resizable = true
 	end
 
@@ -1105,11 +1118,11 @@ function Library:Window(title, subtitle, Theme)
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1
 		})
-		wait(0.5)
+		task.wait(0.5)
 		Library:Tween(Main, 2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 			Size = UDim2.new(2, 0, 2, 0)
 		})
-		wait(0.75)
+		task.wait(0.75)
 		WindowUI:Destroy()
 	end
 
@@ -1137,7 +1150,7 @@ function Library:Window(title, subtitle, Theme)
 	function Window:Resize()
 		local oldX, oldY = Main.Size.X.Offset, Main.Size.Y.Offset
 		local mousePos = Vector2.new(Mouse.X - Offset.X, Mouse.Y - Offset.Y)
-		local newSize = Vector2.new(math.clamp(mousePos.X - Main.AbsolutePosition.X, MinimumX, MaxX), math.clamp(mousePos.Y - Main.AbsolutePosition.Y ,MinimumY, MaxY))
+		local newSize = Vector2.new(math.clamp(mousePos.X - Main.AbsolutePosition.X, MinimumX, MaxX), math.clamp(mousePos.Y - Main.AbsolutePosition.Y, MinimumY, MaxY))
 		Main.Size = UDim2.fromOffset(newSize.X,newSize.Y)
 		local newPosX, newPosY = Main.Size.X.Offset, Main.Size.Y.Offset
 		YOffsetSize = Main.Size.Y.Offset
@@ -1166,7 +1179,7 @@ function Library:Window(title, subtitle, Theme)
 		Resizing = false
 	end
 
-	ResizeImage.InputBegan:Connect(function(input)
+	Resize.InputBegan:Connect(function(input)
 		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and resizable then
 			Library:Tween(ResizeImage, 0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In, {
 				ImageTransparency = 0
@@ -2049,7 +2062,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, ButtonUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -2399,7 +2412,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, TextBoxUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -2640,7 +2653,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, InteractableUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -2794,6 +2807,24 @@ function Library:Window(title, subtitle, Theme)
 							Library:New('UICorner', {
 								CornerRadius = UDim.new(0, 3)
 							})
+						}),
+						Library:New('TextButton', {
+							Name = 'ResetButton',
+							Active = true,
+							Size = UDim2.new(0, 61, 0, 16),
+							Position = UDim2.new(-0.12, 0, 0.552, 0),
+							BackgroundColor3 = Theme.SecondaryElementColor,
+							AutoButtonColor = false,
+							FontSize = Enum.FontSize.Size11,
+							BorderSizePixel = 0,
+							TextSize = 11,
+							TextColor3 = Theme.TextColor,
+							Text = 'Reset',
+							Font = Enum.Font.Gotham
+						}, {
+							Library:New('UICorner', {
+								CornerRadius = UDim.new(0, 3)
+							})
 						})
 					}),
 					Library:New('Frame', {
@@ -2893,6 +2924,7 @@ function Library:Window(title, subtitle, Theme)
 				local mouse1down2 = false
 
 				Library:AddRippleEffect(ColorPickerUI.ColorPreviewFrame.ApplyButton)
+				Library:AddRippleEffect(ColorPickerUI.ColorPreviewFrame.ResetButton)
 
 				Window:MakeResizable({
 					Element = ColorPickerUI,
@@ -2924,6 +2956,14 @@ function Library:Window(title, subtitle, Theme)
 					Color = 'SecondaryElementColor'
 				}, {
 					Element = ColorPickerUI.ColorPreviewFrame.ApplyButton,
+					Property = 'TextColor3',
+					Color = 'TextColor'
+				}, {
+					Element = ColorPickerUI.ColorPreviewFrame.ResetButton,
+					Property = 'BackgroundColor3',
+					Color = 'SecondaryElementColor'
+				}, {
+					Element = ColorPickerUI.ColorPreviewFrame.ResetButton,
 					Property = 'TextColor3',
 					Color = 'TextColor'
 				}, {
@@ -2964,7 +3004,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, ColorPickerUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -3051,6 +3091,15 @@ function Library:Window(title, subtitle, Theme)
 				end
 
 				ColorPickerUI.ColorPreviewFrame.ApplyButton.Activated:Connect(function()
+					func(ColorPickerUI.ColorPreviewFrame.ColorPreview.BackgroundColor3)
+				end)
+				
+				ColorPickerUI.ColorPreviewFrame.ResetButton.Activated:Connect(function()
+					preview.BackgroundColor3 = defaultColor
+					local h, s, v = defaultColor:ToHSV()
+					UpdateCursorPosition(h, s, v)
+					setColor(h, s, v)
+					updateRGB()
 					func(ColorPickerUI.ColorPreviewFrame.ColorPreview.BackgroundColor3)
 				end)
 
@@ -3326,7 +3375,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, SwitchUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -3728,7 +3777,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, ToggleUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -4047,7 +4096,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, SliderUI.Size.X.Offset, 0, 50)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -4370,7 +4419,7 @@ function Library:Window(title, subtitle, Theme)
 							Size = UDim2.new(0, KeybindUI.Size.X.Offset, 0, 30)
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -4399,7 +4448,7 @@ function Library:Window(title, subtitle, Theme)
 							ImageTransparency = 1
 						})
 						Circle:TweenSizeAndPosition(UDim2.new(0, size, 0, size), UDim2.new(0.5, (-size / 2), 0.5, (-size / 2)), 'Out', 'Quad', len, true, nil)
-						wait(len + 0.1)
+						task.wait(len + 0.1)
 						Circle:Destroy()
 					end
 				end
@@ -4847,7 +4896,7 @@ function Library:Window(title, subtitle, Theme)
 							ImageColor3 = Theme.TextColor
 						})
 					end
-					wait(0.5)
+					task.wait(0.5)
 					resizable = true
 				end)
 
@@ -5140,14 +5189,14 @@ function Library:Window(title, subtitle, Theme)
 	end
 
 	function Window:CommandBar(cmdBarName, Prefix)
-
+		
 		local CommandBar = {}
 		local Cmds = {}
-
+		
 		if #Prefix > 1 or #Prefix < 1 then
 			error('Error: Invalid input length. Please enter a single character for the prefix.')
 		end
-
+		
 		local CommandBarUI = Library:New('Frame', {
 			Name = cmdBarName,
 			Size = UDim2.new(0, 381, 0, 227),
@@ -5164,9 +5213,9 @@ function Library:Window(title, subtitle, Theme)
 			Library:New('ScrollingFrame', {
 				Name = 'Commands',
 				AnchorPoint = Vector2.new(0.5, 0),
-				Size = UDim2.new(0, 381, 0, 159),
+				Size = UDim2.new(0, 371, 0, 159),
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 190, 0, 64),
+				Position = UDim2.new(0.5, 0, 0, 64),
 				Active = true,
 				BorderSizePixel = 0,
 				CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -5189,8 +5238,8 @@ function Library:Window(title, subtitle, Theme)
 			Library:New('Frame', {
 				Name = 'RunCommandFrame',
 				AnchorPoint = Vector2.new(0.5, 0),
-				Size = UDim2.new(0, 372, 0, 24),
-				Position = UDim2.new(0, 190, 0, 35),
+				Size = UDim2.new(0, 371, 0, 24),
+				Position = UDim2.new(0.5, 0, 0, 35),
 				BorderSizePixel = 0,
 				BackgroundColor3 = Theme.ElementColor,
 			}, {
@@ -5217,6 +5266,95 @@ function Library:Window(title, subtitle, Theme)
 					CornerRadius = UDim.new(0, 3)
 				})
 			}),
+			Library:New('TextLabel', {
+				Name = 'Title',
+				Size = UDim2.new(0, 284, 0, 36),
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0.11, 0, 0, 0),
+				AnchorPoint = Vector2.new(0.11, 0),
+				BorderSizePixel = 0,
+				FontSize = Enum.FontSize.Size14,
+				TextSize = 13,
+				TextColor3 = Theme.TextColor,
+				Text = cmdBarName,
+				Font = Enum.Font.GothamMedium,
+				TextTransparency = 0.1,
+				TextXAlignment = Enum.TextXAlignment.Left
+			})
+		})
+		
+		local Resize2 = Library:New('Frame', {
+			Name = 'Resize',
+			ZIndex = 10,
+			Selectable = true,
+			Active = true,
+			AnchorPoint = Vector2.new(1, 1),
+			BackgroundTransparency = 1,
+			Size = UDim2.new(0, 19, 0, 19),
+			Position = UDim2.new(1, 0, 1, 0),
+			BorderSizePixel = 0,
+			Parent = CommandBarUI
+		}, {
+			Library:New('ImageLabel', {
+				Name = 'ResizeImage',
+				Selectable = false,
+				Size = UDim2.new(0, 17, 0, 17),
+				BackgroundTransparency = 1,
+				Active = false,
+				BorderSizePixel = 0,
+				ImageColor3 = Theme.SecondaryElementColor,
+				Image = Library.Icons.Resize,
+				ImageTransparency = 1
+			})
+		})
+		
+		function CommandBar:SetSize(size, direction)
+			if direction == 'XY' then
+				local xS, xO, yS, yO = CommandBarUI.Size.X.Scale - (CommandBarOriginalSize.X.Scale - size.X.Scale), CommandBarUI.Size.X.Offset - (CommandBarOriginalSize.X.Offset - size.X.Offset), CommandBarUI.Size.Y.Scale - (CommandBarOriginalSize.Y.Scale - size.Y.Scale), CommandBarUI.Size.Y.Offset - (CommandBarOriginalSize.Y.Offset - size.Y.Offset)
+				return UDim2.new(xS, xO, yS, yO)
+			elseif direction == 'X' then
+				local xS, xO, yS, yO = CommandBarUI.Size.X.Scale - (CommandBarOriginalSize.X.Scale - size.X.Scale), CommandBarUI.Size.X.Offset - (CommandBarOriginalSize.X.Offset - size.X.Offset), size.Y.Scale, size.Y.Offset
+				return UDim2.new(xS, xO, yS, yO)
+			elseif direction == 'Y' then
+				local xS, xO, yS, yO = size.X.Scale, size.X.Offset, CommandBarUI.Size.Y.Scale - (CommandBarOriginalSize.Y.Scale - size.Y.Scale), CommandBarUI.Size.Y.Offset - (CommandBarOriginalSize.Y.Offset - size.Y.Offset)
+				return UDim2.new(xS, xO, yS, yO)
+			end
+		end
+		
+		CommandBarUI.Commands.Size = CommandBar:SetSize(UDim2.new(0, 371, 0, 159), 'XY')
+
+		Library:MakeDraggable(CommandBarUI, CommandBarUI.Dragger)
+		
+		local Resizable2 = {
+			X = {},
+			Y = {},
+			XY = {}
+		}
+		
+		local MinimumX2, MinimumY2 = 300, 200
+		local MaxX2, MaxY2 = 780, 455
+		
+		local YOffsetSize2, Offset2, Resizing2, PreviousCommandBarSize
+		
+		local Topbar2 = Library:New('Frame', {
+			Name = 'Topbar',
+			Size = Window:SetSize(UDim2.new(0, 250, 0, 36), 'X'),
+			AnchorPoint = Vector2.new(1, 0),
+			BackgroundColor3 = Theme.WindowColor,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, 0, 0, 0),
+			BorderSizePixel = 0,
+			Parent = CommandBarUI
+		}, {
+			Library:New('UICorner', {
+				CornerRadius = UDim.new(0, 3)
+			}),
+			Library:New('UIListLayout', {
+				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Right,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				VerticalAlignment = Enum.VerticalAlignment.Center
+			}),
 			Library:New('TextBox', {
 				Name = 'Prefix',
 				Selectable = false,
@@ -5237,45 +5375,136 @@ function Library:Window(title, subtitle, Theme)
 					CornerRadius = UDim.new(0, 3)
 				})
 			}),
-			Library:New('TextLabel', {
-				Name = 'Title',
-				Size = UDim2.new(0, 284, 0, 36),
+			Library:New('Frame', {
+				Name = 'Space1',
+				LayoutOrder = 1,
+				Size = UDim2.new(0, 20, 0, 22),
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0.029, 0, 0, 0),
-				BorderSizePixel = 0,
-				FontSize = Enum.FontSize.Size14,
-				TextSize = 13,
-				TextColor3 = Theme.TextColor,
-				Text = cmdBarName,
-				Font = Enum.Font.GothamMedium,
-				TextTransparency = 0.1,
-				TextXAlignment = Enum.TextXAlignment.Left
 			}),
 			Library:New('ImageButton', {
+				LayoutOrder = 2,
+				Name = 'Minimize',
+				Size = UDim2.new(0, 20, 0, 20),
+				BackgroundTransparency = 1,
+				ImageColor3 = Theme.TextColor,
+				ImageTransparency = 0.1,
+				ImageRectOffset = Vector2.new(884, 284),
+				Image = Library.Icons.Minimize,
+				ImageRectSize = Vector2.new(36, 36)
+			}),
+			Library:New('Frame', {
+				LayoutOrder = 3,
+				Name = 'Space2',
+				Size = UDim2.new(0, 10, 0, 22),
+				BackgroundTransparency = 1,
+			}),
+			Library:New('ImageButton', {
+				LayoutOrder = 6,
 				Name = 'Close',
 				Size = UDim2.new(0, 20, 0, 20),
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 355, 0, 7),
 				ImageColor3 = Theme.TextColor,
 				ImageTransparency = 0.1,
 				ImageRectOffset = Vector2.new(284, 4),
 				Image = Library.Icons.Close,
 				ImageRectSize = Vector2.new(24, 24)
 			}),
-			Library:New('ImageButton', {
-				Name = 'Minimize',
-				Size = UDim2.new(0, 20, 0, 20),
+			Library:New('Frame', {
+				LayoutOrder = 7,
+				Name = 'Space4',
+				Size = UDim2.new(0, 5, 0, 22),
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 327, 0, 7),
-				ImageColor3 = Theme.TextColor,
-				ImageTransparency = 0.1,
-				ImageRectOffset = Vector2.new(884, 284),
-				Image = Library.Icons.Minimize,
-				ImageRectSize = Vector2.new(36, 36)
 			})
 		})
+		
+		function CommandBar:Resize()
+			local oldX, oldY = CommandBarUI.Size.X.Offset, CommandBarUI.Size.Y.Offset
+			local mousePos = Vector2.new(Mouse.X - Offset2.X, Mouse.Y - Offset2.Y)
+			local newSize = Vector2.new(math.clamp(mousePos.X - CommandBarUI.AbsolutePosition.X, MinimumX2, MaxX2), math.clamp(mousePos.Y - CommandBarUI.AbsolutePosition.Y, MinimumY2, MaxY2))
+			CommandBarUI.Size = UDim2.fromOffset(newSize.X,newSize.Y)
+			local newPosX, newPosY = CommandBarUI.Size.X.Offset, CommandBarUI.Size.Y.Offset
+			YOffsetSize2 = CommandBarUI.Size.Y.Offset
+			for _, a in pairs(Resizable2) do
+				for i, v in pairs(a) do
+					if v.Direction == 'X' then
+						v.Element.Size = UDim2.new(0, v.Element.Size.X.Offset + ((newPosX - oldX)), 0, v.Element.Size.Y.Offset)
+					elseif v.Direction == 'Y' then
+						v.Element.Size = UDim2.new(0, v.Element.Size.X.Offset, 0, v.Element.Size.Y.Offset + ((newPosY - oldY)))
+					elseif v.Direction == 'XY' then
+						v.Element.Size = UDim2.new(0, v.Element.Size.X.Offset + ((newPosX - oldX)), 0, v.Element.Size.Y.Offset + ((newPosY - oldY)))
+					end
+				end
+			end
+			PreviousCommandBarSize = CommandBarUI.Size
+		end
+		
+		function CommandBar:MakeResizable(...)
+			local Table = {...}
+			for i, v in pairs(Table) do
+				table.insert(Resizable2[v.Direction], {
+					Element = v.Element,
+					Direction = v.Direction
+				})
+			end
+		end
+		
+		function CommandBar:StartResizing(pos)
+			local Mouse = pos
+			YOffsetSize2 = CommandBarUI.Size.Y.Offset
+			Offset2 = Vector2.new(Mouse.X-(CommandBarUI.AbsolutePosition.X+CommandBarUI.AbsoluteSize.X),Mouse.Y-(CommandBarUI.AbsolutePosition.Y+CommandBarUI.AbsoluteSize.Y))
+			Resizing2 = true
+		end
 
-		Library:MakeDraggable(CommandBarUI, CommandBarUI.Dragger)
+		function CommandBar:FinishResizing()
+			Resizing2 = false
+		end
+		
+		CommandBar:MakeResizable({
+			Element = CommandBarUI.Topbar,
+			Direction = 'X'
+		}, {
+			Element = CommandBarUI.Title,
+			Direction = 'X'
+		}, {
+			Element = CommandBarUI.Commands,
+			Direction = 'XY'
+		}, {
+			Element = CommandBarUI.Dragger,
+			Direction = 'X'
+		}, {
+			Element = CommandBarUI.RunCommandFrame,
+			Direction = 'X'
+		}, {
+			Element = CommandBarUI.RunCommandFrame.RunCommand,
+			Direction = 'X'
+		})
+
+		Resize2.InputBegan:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and resizable2 then
+				Library:Tween(Resize2.ResizeImage, 0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In, {
+					ImageTransparency = 0
+				})
+				if resizable2 then
+					CommandBar:StartResizing(input.Position)
+				end
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						CommandBar:FinishResizing()
+						Library:Tween(Resize2.ResizeImage, 0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In, {
+							ImageTransparency = 1
+						})
+					end
+				end)
+			end
+		end)
+
+		UIS.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				if Resizing2 and resizable2 then
+					CommandBar:Resize()
+				end
+			end
+		end)
 
 		CommandBarUI.Commands.UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
 			Library:Tween(CommandBarUI.Commands, 0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
@@ -5304,15 +5533,19 @@ function Library:Window(title, subtitle, Theme)
 			Property = 'PlaceholderColor3',
 			Color = 'TextColor'
 		}, {
-			Element = CommandBarUI.Prefix,
+			Element = CommandBarUI.Topbar,
+			Property = 'BackgroundColor3',
+			Color = 'WindowColor'
+		}, {
+			Element = CommandBarUI.Topbar.Prefix,
 			Property = 'BackgroundColor3',
 			Color = 'ElementColor'
 		}, {
-			Element = CommandBarUI.Prefix,
+			Element = CommandBarUI.Topbar.Prefix,
 			Property = 'TextColor3',
 			Color = 'TextColor'
 		}, {
-			Element = CommandBarUI.Prefix,
+			Element = CommandBarUI.Topbar.Prefix,
 			Property = 'PlaceholderColor3',
 			Color = 'TextColor'
 		}, {
@@ -5320,11 +5553,11 @@ function Library:Window(title, subtitle, Theme)
 			Property = 'TextColor3',
 			Color = 'TextColor'
 		}, {
-			Element = CommandBarUI.Close,
+			Element = CommandBarUI.Topbar.Close,
 			Property = 'ImageColor3',
 			Color = 'TextColor'
 		}, {
-			Element = CommandBarUI.Minimize,
+			Element = CommandBarUI.Topbar.Minimize,
 			Property = 'ImageColor3',
 			Color = 'TextColor'
 		})
@@ -5372,21 +5605,21 @@ function Library:Window(title, subtitle, Theme)
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundTransparency = 1
 			})
-			wait(0.5)
+			task.wait(0.5)
 			Library:Tween(CommandBarUI, 2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
 				Size = UDim2.new(2, 0, 2, 0)
 			})
-			wait(0.75)
+			task.wait(0.75)
 			CommandBarUI:Destroy()
 		end
 
 		function CommandBar:ChangePrefix(newPrefix)
 			if #newPrefix > 1 or #newPrefix < 1 then
 				warn('Error: Invalid input length. Please enter a single character for the prefix.')
-				CommandBarUI.Prefix.Text = Prefix
+				CommandBarUI.Topbar.Prefix.Text = Prefix
 			else
 				Prefix = newPrefix
-				CommandBarUI.Prefix.Text = Prefix
+				CommandBarUI.Topbar.Prefix.Text = Prefix
 			end
 		end
 
@@ -5414,8 +5647,8 @@ function Library:Window(title, subtitle, Theme)
 			CloseCommandUI()
 		end
 
-		CommandBarUI.Prefix.FocusLost:Connect(function()
-			CommandBar:ChangePrefix(CommandBarUI.Prefix.Text)
+		CommandBarUI.Topbar.Prefix.FocusLost:Connect(function()
+			CommandBar:ChangePrefix(CommandBarUI.Topbar.Prefix.Text)
 		end)
 
 		UIS.InputBegan:Connect(function(input, gameProcessed)
@@ -5474,11 +5707,12 @@ function Library:Window(title, subtitle, Theme)
 
 		function CommandBar:Minimize()
 			cmduiminimized = true
+			resizable2 = false
 			for _, func in pairs(onMinimizeFunctions2) do
 				func(cmduiminimized)
 			end
 			Library:Tween(CommandBarUI, 0.75, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
-				Size = UDim2.new(0, 381, 0, 35)
+				Size = UDim2.new(0, CommandBarUI.Size.X.Offset, 0, 35)
 			})
 		end
 
@@ -5487,12 +5721,15 @@ function Library:Window(title, subtitle, Theme)
 			for _, func in pairs(onMinimizeFunctions2) do
 				func(cmduiminimized)
 			end
+			resizable2 = false
 			Library:Tween(CommandBarUI, 0.75, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {
-				Size = UDim2.new(0, 381, 0, 227)
+				Size = UDim2.new(0, CommandBarUI.Size.X.Offset, 0, 227)
 			})
+			task.wait(0.75)
+			resizable2 = true
 		end
 
-		CommandBarUI.Minimize.Activated:Connect(function()
+		CommandBarUI.Topbar.Minimize.Activated:Connect(function()
 			cmduiminimized = not cmduiminimized
 			if cmduiminimized then
 				CommandBar:Minimize()
@@ -5501,7 +5738,7 @@ function Library:Window(title, subtitle, Theme)
 			end
 		end)
 
-		CommandBarUI.Close.Activated:Connect(function()
+		CommandBarUI.Topbar.Close.Activated:Connect(function()
 			CloseCommandUI()
 		end)
 
@@ -5586,7 +5823,7 @@ function Library:Window(title, subtitle, Theme)
 						ArgsStr = ArgsStr..v..'>'
 					end
 				end
-				FullStr = NameStr..'  '..ArgsStr
+				FullStr = NameStr..' '..ArgsStr
 			else
 				ArgsStr = ''
 				FullStr = NameStr
@@ -5605,8 +5842,7 @@ function Library:Window(title, subtitle, Theme)
 
 			local CommandButtonUI = Library:New('Frame', {
 				Name = NameStr,
-				AnchorPoint = Vector2.new(0.5, 0),
-				Size = UDim2.new(0, 372, 0, 24),
+				Size = UDim2.new(1, 0, 0, 24),
 				BorderSizePixel = 0,
 				BackgroundColor3 = Theme.ElementColor,
 				Parent = CommandBarUI.Commands
@@ -5649,6 +5885,10 @@ function Library:Window(title, subtitle, Theme)
 			})
 
 			Library:AddRippleEffect(CommandButtonUI.Button, CommandButtonUI)
+			
+			CommandButtonUI:GetPropertyChangedSignal('AbsoluteSize'):Connect(function()
+				CommandButtonUI:FindFirstChild('Text').Size = UDim2.new(CommandButtonUI.Size.X.Scale, CommandButtonUI.Size.X.Offset - 13, CommandButtonUI.Size.Y.Scale, CommandButtonUI.Size.Y.Offset)
+			end)
 
 			CommandButtonUI.Button.Activated:Connect(function()
 				local text = CommandBarUI.RunCommandFrame.RunCommand.Text
@@ -5700,10 +5940,14 @@ function Library:Window(title, subtitle, Theme)
 							ArgsStr = ArgsStr..v..'>'
 						end
 					end
-					FullStr = NameStr..'  '..ArgsStr..'  |  '..Desc
+					FullStr = NameStr..' '..ArgsStr
 				else
 					ArgsStr = ''
-					FullStr = NameStr..'  |  '..Desc
+					FullStr = NameStr
+				end
+
+				if Desc ~= '' then
+					FullStr = FullStr..'  |  '..Desc
 				end
 
 				Cmds[NameStr] = {
