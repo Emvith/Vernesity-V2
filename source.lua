@@ -231,6 +231,12 @@ function Library:StringToColor3(color3String)
 	return Color3.new(tonumber(r) / 255, tonumber(g) / 255, tonumber(b) / 255)
 end
 
+function Library:AddTheme(themeName, newTheme)
+	if type(newTheme) == 'table' and newTheme.TextColor and newTheme.WindowColor and newTheme.TabColor and newTheme.ElementColor and newTheme.SecondaryElementColor then
+		Library.Themes[themeName] = newTheme
+	end
+end
+
 local VernesityV2UI = Library:New('ScreenGui', {
 	Name = 'VernesityV2UI',
 	IgnoreGuiInset = true,
@@ -522,12 +528,6 @@ function Library:Window(title, subtitle, Theme)
 	else
 		Theme = Library.Themes.DarkTheme
 		warn('Invalid Theme')
-	end
-
-	function Window:AddTheme(themeName, newTheme)
-		if type(newTheme) == 'table' and newTheme.TextColor and newTheme.WindowColor and newTheme.TabColor and newTheme.ElementColor and newTheme.SecondaryElementColor then
-			Library.Themes[themeName] = newTheme
-		end
 	end
 
 	function Window:GetTheme()
