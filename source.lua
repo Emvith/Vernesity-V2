@@ -5165,7 +5165,7 @@ function Library:Window(title, subtitle, Theme)
 				end)
 
 				function PlayerList:GetElement()
-					return PlayerListUI
+					return PlayerListUI:GetElement()
 				end
 
 				function PlayerList:Edit(newName, newFunc)
