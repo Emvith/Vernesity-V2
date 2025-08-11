@@ -4217,11 +4217,6 @@ function Library:Window(title, subtitle, Theme)
 				local Keybind = {}
 				local Device = Library:GetDevice()
 
-				if #default > 1 or #default < 1 then
-					warn('Error: Invalid input length. Please enter a single character for the keybind.')
-					return
-				end
-
 				default = default:upper()
 
 				local KeybindUI = Library:New('Frame', {
