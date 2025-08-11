@@ -99,10 +99,8 @@ local function loadFunction()
 end
 
 function Library:CharacterToKeyCode(char)
-	for i, Keycode in Enum.KeyCode:GetEnumItems() do
-		if Keycode.Value == string.byte(char) then
-			return Keycode
-		end
+	if Enum.KeyCode[char:upper()] then
+		return Enum.KeyCode[char:upper()]
 	end
 end
 
@@ -4449,7 +4447,7 @@ function Library:Window(title, subtitle, Theme)
 				end
 
 				local Choosing = false
-				local currentKey = Library:CharacterToKeyCode(default:lower()).Name
+				local currentKey = Library:CharacterToKeyCode(default).Name
 				local MobileButton = nil
 
 				KeybindFrame.Parent.Activated:Connect(function()
@@ -4473,7 +4471,7 @@ function Library:Window(title, subtitle, Theme)
 					else
 						newKeybind = newKeybind:upper()
 						default = newKeybind
-						currentKey = Library:CharacterToKeyCode(newKeybind:lower()).Name
+						currentKey = Library:CharacterToKeyCode(newKeybind).Name
 						KeybindFrame.Text = newKeybind
 						if MobileButton ~= nil then
 							MobileButton:FindFirstChild('Text').Text = newKeybind
@@ -4605,7 +4603,7 @@ function Library:Window(title, subtitle, Theme)
 							warn('Error: Invalid input length. Please enter a single character for the keybind.')
 							KeybindFrame.Text = currentKey
 						else
-							currentKey = Library:CharacterToKeyCode(KeybindFrame.Text:lower()).Name
+							currentKey = Library:CharacterToKeyCode(KeybindFrame.Text).Name
 						end
 						if MobileButton ~= nil then
 							MobileButton:FindFirstChild('Text').Text = KeybindFrame.Text
