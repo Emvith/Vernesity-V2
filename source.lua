@@ -113,7 +113,7 @@ function Library:KeyCodeToCharacter(keyCode)
 end
 
 function Library:GetDevice()
-	if UIS.TouchEnabled and game.Players.LocalPlayer.PlayerGui:FindFirstChild('TouchGui'):FindFirstChild('TouchControlFrame') then
+	if UIS.TouchEnabled and game.Players.LocalPlayer.PlayerGui:WaitForChild('TouchGui', 2) then
 		return 'Mobile'
 	else
 		return 'PC'
