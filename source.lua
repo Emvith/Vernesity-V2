@@ -156,7 +156,7 @@ pcall(function()
 end)
 
 
-if Smth.Parent == CoreGui then
+if Smth.Parent == CoreGui and CoreGui ~= nil then
 	UIParent = CoreGui
 else
 	UIParent = PlayerGui
